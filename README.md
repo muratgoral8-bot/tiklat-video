@@ -34,8 +34,8 @@ Site adresi değişirse: bağlantı hatası ekranındaki **Site adresini değiş
 
 ## Durum (dürüst)
 
-- Kod sandbox'ta **Android SDK olmadan** yazıldı; yalnızca Java sözdizimi/tür denetimi taklit sınıflarla yapıldı. Gerçek derleme
-  GitHub Actions'ta olacak; **bir telefonda ve Android Auto'da hiç denenmedi.**
+- İlk sürüm (v1) `muratgoral8-bot/tiklat-video` deposunda GitHub Actions ile hatasız derlendi; imza ve manifest doğrulandı.
+  **Bir telefonda ve Android Auto'da hiç denenmedi.**
 - Android 14 ve altında uygulama telefonda çalışır ama araç ekranında açılmaz (Android Auto şartı).
 - Sabit imza anahtarı (`app/tiklat.keystore`, parola `tiklat123`) projededir: yeni sürümler eskisinin üzerine kurulur.
   Depoyu **Private** tutun.
