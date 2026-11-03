@@ -2,7 +2,6 @@ package com.muratgoral.tiklatauto;
 
 import android.net.Uri;
 
-import androidx.annotation.Nullable;
 import androidx.media3.common.AudioAttributes;
 import androidx.media3.common.C;
 import androidx.media3.common.MediaItem;
@@ -61,7 +60,6 @@ public class AutoService extends MediaLibraryService {
         session = new MediaLibrarySession.Builder(this, player, new Callback()).build();
     }
 
-    @Nullable
     @Override
     public MediaLibrarySession onGetSession(MediaSession.ControllerInfo controllerInfo) {
         return session;
@@ -223,7 +221,7 @@ public class AutoService extends MediaLibraryService {
     private final class Callback implements MediaLibrarySession.Callback {
         @Override
         public ListenableFuture<LibraryResult<MediaItem>> onGetLibraryRoot(
-                MediaLibrarySession s, MediaSession.ControllerInfo browser, @Nullable LibraryParams params) {
+                MediaLibrarySession s, MediaSession.ControllerInfo browser, LibraryParams params) {
             return Futures.immediateFuture(LibraryResult.ofItem(folder(ROOT, "Tiklat Video"), params));
         }
 
@@ -236,7 +234,7 @@ public class AutoService extends MediaLibraryService {
         @Override
         public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> onGetChildren(
                 MediaLibrarySession s, MediaSession.ControllerInfo browser, String parentId,
-                int page, int pageSize, @Nullable LibraryParams params) {
+                int page, int pageSize, LibraryParams params) {
             SettableFuture<LibraryResult<ImmutableList<MediaItem>>> f = SettableFuture.create();
             io.execute(() -> {
                 try {
