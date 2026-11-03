@@ -3,6 +3,15 @@
 `https://www.tiklat.com.tr/autoplay/` adresindeki Medya Merkezi sitesini (PWA) **telefonda** ve **Android Auto araç ekranında**
 tam ekran açan ince bir Android uygulaması. Site aynen PWA olarak kalır; bu uygulama sadece onu araç ekranına taşır.
 
+## Android Auto'da iki bölüm
+
+1. **Medya bölümü (YouTube Music gibi)** — Kurulunca Android Auto'nun uygulama listesinde **Tiklat Video** simgesi çıkar
+   (Play Store dışı olduğu için Android Auto'da bir kerelik "Bilinmeyen kaynaklar" gerekir). İçinde Favoriler, Son izlenenler,
+   Canlı TV (gruplara göre) ve Arşiv listeleri vardır. **Yalnızca ses** çalar, bu yüzden sürüşte de kullanılabilir.
+   IPTV kanalları ve arşivdeki doğrudan MP4/HLS kayıtları çalar; YouTube/Vimeo/Dailymotion burada listelenmez
+   (yalnızca resmî gömme oynatıcılarıyla oynatılabilirler). Oturum, telefondaki uygulamada yaptığınız girişten gelir.
+2. **Görüntülü bölüm (park halinde, Android 15+)** — Siteyi araç ekranında tam ekran açar; araç hareket edince Android Auto kapatır.
+
 ## Nasıl çalışır
 
 - Android **15 ve üstü** telefonlarda Android Auto, "park halinde çalışan uygulama" (CAR_LAUNCHER) olarak işaretli

@@ -40,12 +40,14 @@ import android.widget.Toast;
 /**
  * Siteyi (PWA) tam ekran WebView'de açar. Aynı etkinlik telefonda ve — Android 15+ ile — park halindeyken
  * Android Auto araç ekranında çalışır. Araç hareket edince Android Auto uygulamayı kapatır; ayrıca uygulama
- * görünmez olduğunda sayfadaki tüm videolar durdurulur.
+ * görünmez olduğunda sayfadaki tüm videolar durdurulur. Android Auto'nun medya listesindeki sesli bölüm
+ * {@link AutoService} içindedir ve buradaki oturum çerezini kullanır.
  */
 public class MainActivity extends Activity {
     static final String DEFAULT_URL = "https://www.tiklat.com.tr/autoplay/";
     private static final int REQ_LOCATION = 10;
     private static final int REQ_FILE = 11;
+    private static final int REQ_NOTIF = 12;
     private static final int BG = 0xFF0B0D12;
 
     private static final String JS_PAUSE_ALL =
@@ -96,6 +98,12 @@ public class MainActivity extends Activity {
 
         if (state == null || web.restoreState(state) == null) {
             web.loadUrl(homeUrl);
+        }
+        // Android 13+: medya oynatma bildirimi için izin (bir kez sorulur).
+        if (Build.VERSION.SDK_INT >= 33 && !prefs().getBoolean("askedNotif", false)
+                && checkSelfPermission("android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED) {
+            prefs().edit().putBoolean("askedNotif", true).apply();
+            requestPermissions(new String[]{"android.permission.POST_NOTIFICATIONS"}, REQ_NOTIF);
         }
     }
 
@@ -214,7 +222,10 @@ public class MainActivity extends Activity {
         @Override
         public void onPageFinished(WebView v, String url) {
             markDisplay();
-            CookieManager.getInstance().flush();
+            CookieManager cm = CookieManager.getInstance();
+            cm.flush();
+            // Android Auto medya bölümü aynı oturumu kullansın.
+            Api.saveCookie(MainActivity.this, cm.getCookie(Api.base(MainActivity.this)));
         }
 
         @Override
@@ -285,7 +296,7 @@ public class MainActivity extends Activity {
     // ------------------------------------------------------------------ yardımcılar
 
     private SharedPreferences prefs() {
-        return getSharedPreferences("cfg", MODE_PRIVATE);
+        return Api.prefs(this);
     }
 
     private void setHome(String url) {

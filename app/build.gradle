@@ -37,6 +37,11 @@ android {
     }
 }
 
-// Dış kitaplık yok: yalnızca Android'in kendi WebView'i kullanılır.
+// Ekran: Android'in kendi WebView'i. Android Auto medya bölümü: AndroidX Media3.
 dependencies {
+    def media3 = '1.3.1'
+    implementation "androidx.media3:media3-exoplayer:$media3"
+    implementation "androidx.media3:media3-exoplayer-hls:$media3"
+    implementation "androidx.media3:media3-session:$media3"
+    implementation 'com.google.guava:guava:32.1.3-android'
 }
