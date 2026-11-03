@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.muratgoral.tiklatauto'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.muratgoral.tiklatauto'
+        minSdk 26
+        targetSdk 35
+        // GitHub Actions'ta her derlemede artar.
+        versionCode Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '1')
+        versionName '1.0.' + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    // Sabit imza: her derleme aynı anahtarla imzalanır, böylece yeni sürüm eskisinin üzerine kurulur
+    // (giriş/çerezler silinmez). Kişisel kullanım içindir.
+    signingConfigs {
+        fixed {
+            storeFile file('tiklat.keystore')
+            storePassword 'tiklat123'
+            keyAlias 'tiklat'
+            keyPassword 'tiklat123'
+        }
+    }
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.fixed
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+// Dış kitaplık yok: yalnızca Android'in kendi WebView'i kullanılır.
+dependencies {
+}

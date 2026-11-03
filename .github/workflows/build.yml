@@ -1,0 +1,44 @@
+name: APK derle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Proje dosyalarini hazirla
+        run: |
+          if [ -f tiklat-video.zip ]; then
+            unzip -q -o tiklat-video.zip -d proj
+          else
+            mkdir -p proj && cp -r settings.gradle build.gradle gradle.properties app proj/
+          fi
+          if [ ! -f proj/app/tiklat.keystore ] && [ -f proj/app/tiklat.keystore.b64 ]; then
+            base64 -d proj/app/tiklat.keystore.b64 > proj/app/tiklat.keystore
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10.2'
+      - name: Derle
+        run: gradle -p proj assembleDebug --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tiklat-video-apk
+          path: proj/app/build/outputs/apk/debug/app-debug.apk
+      - name: Surum olarak yayinla
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Tiklat Video v${{ github.run_number }}
+          files: proj/app/build/outputs/apk/debug/app-debug.apk
