@@ -55,6 +55,18 @@ final class Ayarlar {
         p.edit().putString("ana", a.isEmpty() ? "" : duzelt(a)).putString("imler", imler).apply();
     }
 
+    /** "Paylaş → Tiklat Video" ile gelen bağlantıyı yer imlerinin başına ekler. Zaten varsa false. */
+    boolean imEkle(String ad, String adres) {
+        adres = duzelt(adres);
+        for (String[] im : yerImleri()) if (im[1].equals(adres)) return false;
+        String temiz = ad == null ? "" : ad.replace("|", " ").replace("\n", " ").trim();
+        if (temiz.length() > 40) temiz = temiz.substring(0, 39) + "…";
+        String satir = (temiz.isEmpty() ? "" : temiz + " | ") + adres;
+        String eski = imlerMetni().trim();
+        p.edit().putString("imler", eski.isEmpty() ? satir : satir + "\n" + eski).apply();
+        return true;
+    }
+
     String imlerJson() {
         JSONArray d = new JSONArray();
         try {

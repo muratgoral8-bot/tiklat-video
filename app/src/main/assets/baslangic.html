@@ -9,8 +9,6 @@
   * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
   html, body { background:var(--zemin); color:var(--yazi); font-family:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   body { padding:14px 18px 28px; min-height:100vh; }
-  /* Araçta sağ kenar Android Auto düğmelerine ayrılır */
-  body.arac { padding-right:108px; }
   header { display:flex; align-items:center; gap:14px; height:54px; margin-bottom:12px; }
   .logo { width:44px; height:44px; border-radius:12px; background:#e53935; display:grid; place-items:center; flex:none; }
   .logo:after { content:""; border-left:15px solid #fff; border-top:10px solid transparent; border-bottom:10px solid transparent; margin-left:4px; }
@@ -24,7 +22,9 @@
   form.telefon input { width:100%; height:50px; border-radius:25px; border:0; padding:0 20px; font-size:17px; }
   body.telefon form.telefon { display:flex; }
   body.telefon .ara, body.telefon .bos, .saat { display:none; }
-  body.telefon form.telefon { margin-left:12px; }
+  body.telefon header { flex-wrap:wrap; height:auto; row-gap:12px; }
+  body.telefon form.telefon { order:10; flex-basis:100%; }
+  body.telefon .ayar { margin-left:auto; }
   h2 { font-size:15px; color:var(--soluk); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin:16px 2px 10px; }
   .izgara { display:grid; grid-template-columns:repeat(auto-fill, minmax(168px, 1fr)); gap:12px; }
   .karo { position:relative; height:104px; border-radius:18px; padding:14px 16px; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; color:#fff; text-decoration:none; }
@@ -38,6 +38,23 @@
   .video span { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; padding:0 12px; font-size:15px; font-weight:600; line-height:1.3; overflow:hidden; }
   .bilgi { margin-top:18px; color:var(--soluk); font-size:13px; line-height:1.5; }
   .gizli { display:none; }
+  .ayar { width:50px; height:50px; border-radius:25px; border:0; background:#22344d; color:#fff; display:none; place-items:center; flex:none; margin-left:10px; }
+  .ayar svg { width:26px; height:26px; }
+  body.telefon .ayar { display:grid; }
+  /* araç ekranı klavyesi */
+  #klavye { position:fixed; left:0; right:0; bottom:0; background:#0e1a2c; border-top:1px solid #2a3c58; padding:8px 10px 10px; z-index:10; display:none; }
+  #klavye.acik { display:block; }
+  body.klavyeli { padding-bottom:330px; }
+  #yazi { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  #yazi div { flex:1; height:48px; border-radius:24px; background:#fff; color:#111; font-size:20px; padding:0 18px; display:flex; align-items:center; overflow:hidden; white-space:nowrap; }
+  #yazi div:empty:before { content:"Ne izlemek istersin?"; color:#888; }
+  #klavye .sira { display:flex; gap:6px; margin-bottom:6px; }
+  #klavye button { flex:1; min-width:0; height:46px; border:0; border-radius:10px; background:#22344d; color:#fff; font-size:20px; font-weight:600; }
+  #klavye button:active { background:#35507a; }
+  #klavye .genis { flex:1.6; font-size:16px; }
+  #klavye .bosluk { flex:4; }
+  #klavye .tamam { background:var(--vurgu); color:#1b1b1b; flex:2; font-size:17px; font-weight:800; }
+  #klavye .kapat { background:#3a2030; color:#ff8a98; font-size:16px; }
 </style>
 </head>
 <body>
@@ -47,6 +64,7 @@
   <form class="telefon" id="aramaFormu"><input id="aramaKutusu" type="search" placeholder="Ara…" enterkeyhint="search"></form>
   <button class="ara" id="araDugme"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>YouTube'da ara</button>
   <div class="bos"></div>
+  <button class="ayar" id="ayarDugme" title="Ayarlar"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54A.48.48 0 0 0 13.92 2h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.72 8.47a.48.48 0 0 0 .12.61l2.03 1.58c-.04.31-.07.63-.07.94s.02.63.06.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg></button>
 </header>
 
 <section id="sonBolum" class="gizli">
@@ -62,7 +80,9 @@
   <div class="izgara" id="imler"></div>
 </section>
 
-<p class="bilgi" id="bilgi">Araç hareket edince görüntü kapanır, ses devam eder. Durunca görüntü geri gelir.</p>
+<p class="bilgi" id="bilgi">Araç ekranında park halindeyken çalışır. Araç hareket edince Android Auto uygulamayı kapatır; durunca açıp kaldığın yerden devam edebilirsin.</p>
+
+<div id="klavye"><div id="yazi"><div id="yaziKutu"></div></div></div>
 
 <script>
 (function () {
@@ -125,7 +145,38 @@
     document.getElementById('imBolum').classList.remove('gizli');
   }
 
-  document.getElementById('araDugme').addEventListener('click', function () { if (K && K.ara) K.ara(); });
+  // ---- araç ekranı klavyesi (Android Auto'da telefon klavyesi araç ekranına gelmeyebilir)
+  var SIRALAR = [
+    ['1','2','3','4','5','6','7','8','9','0'],
+    ['q','w','e','r','t','y','u','ı','o','p','ğ','ü'],
+    ['a','s','d','f','g','h','j','k','l','ş','i'],
+    ['z','x','c','v','b','n','m','ö','ç','⌫'],
+    ['Kapat','boşluk','Ara']
+  ];
+  var klavye = document.getElementById('klavye'), kutu = document.getElementById('yaziKutu');
+  SIRALAR.forEach(function (sira) {
+    var d = document.createElement('div'); d.className = 'sira';
+    sira.forEach(function (t) {
+      var b = document.createElement('button'); b.type = 'button';
+      b.className = t === 'boşluk' ? 'bosluk' : t === 'Ara' ? 'tamam' : t === 'Kapat' ? 'kapat' : t === '⌫' ? 'genis' : '';
+      b.textContent = t === 'boşluk' ? ' ' : t;
+      b.addEventListener('click', function () { tus(t); });
+      d.appendChild(b);
+    });
+    klavye.appendChild(d);
+  });
+  function tus(t) {
+    if (t === 'Kapat') { klavyeKapat(); return; }
+    if (t === 'Ara') { var q = kutu.textContent.replace(/\u00a0/g, ' ').trim(); if (q) location.href = yt(q); return; }
+    if (t === '⌫') kutu.textContent = kutu.textContent.slice(0, -1);
+    else if (t === 'boşluk') kutu.textContent += '\u00a0';
+    else kutu.textContent += t;
+  }
+  function klavyeKapat() { klavye.classList.remove('acik'); document.body.classList.remove('klavyeli'); }
+  document.getElementById('araDugme').addEventListener('click', function () {
+    klavye.classList.add('acik'); document.body.classList.add('klavyeli'); window.scrollTo(0, 0);
+  });
+  document.getElementById('ayarDugme').addEventListener('click', function () { if (K && K.ayarlar) K.ayarlar(); });
   document.getElementById('aramaFormu').addEventListener('submit', function (e) {
     e.preventDefault();
     var q = document.getElementById('aramaKutusu').value.trim();
