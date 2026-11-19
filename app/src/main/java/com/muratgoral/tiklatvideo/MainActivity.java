@@ -81,8 +81,11 @@ public final class MainActivity extends Activity {
         LinearLayout ayarlar = kart(ic);
         ayarlar.addView(yazi("Ana sayfa adresi", 16, Color.WHITE, true));
         ayarlar.addView(bosluk(6));
+        ayarlar.addView(yazi("Boş bırakırsan araçta Tiklat başlangıç sayfası açılır (giriş gerekmez).", 13, 0xFFB8C7D9, false));
+        ayarlar.addView(bosluk(6));
         anaKutu = kutu(false);
-        anaKutu.setText(ayar.anaSayfa());
+        anaKutu.setHint("Boş: başlangıç sayfası");
+        anaKutu.setText(ayar.anaSayfaYazisi());
         ayarlar.addView(anaKutu);
         ayarlar.addView(bosluk(14));
         ayarlar.addView(yazi("Yer imleri", 16, Color.WHITE, true));
@@ -96,7 +99,7 @@ public final class MainActivity extends Activity {
         Button kaydet = dugme("Kaydet", VURGU, 0xFF1A1A1A);
         kaydet.setOnClickListener(v -> {
             ayar.kaydet(anaKutu.getText().toString(), imKutu.getText().toString());
-            anaKutu.setText(ayar.anaSayfa());
+            anaKutu.setText(ayar.anaSayfaYazisi());
             Toast.makeText(this, "Kaydedildi. Araç ekranında Yer imleri'nden açabilirsin.", Toast.LENGTH_LONG).show();
         });
         ayarlar.addView(kaydet);

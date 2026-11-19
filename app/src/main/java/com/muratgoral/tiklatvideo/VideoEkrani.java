@@ -21,6 +21,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
+import android.webkit.JavascriptInterface;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.RenderProcessGoneDetail;
@@ -76,6 +77,7 @@ public final class VideoEkrani extends Screen implements SurfaceCallback {
     private boolean sonOnayGerekli;
     private boolean izinIstendi;
     private boolean bitti;
+    private volatile boolean yerelSayfa;
 
     VideoEkrani(@NonNull CarContext cc) {
         super(cc);
@@ -362,8 +364,22 @@ public final class VideoEkrani extends Screen implements SurfaceCallback {
             }
 
             @Override
+            public void onPageStarted(WebView v, String url, Bitmap ikon) {
+                yerelSayfa = url != null && url.startsWith("file:///android_asset/");
+            }
+
+            @Override
             public void onPageFinished(WebView v, String url) {
+                if (url != null && (url.startsWith("http") || url.startsWith(Ayarlar.BASLANGIC))) sonAdres = url;
+                gecmiseYaz(url, v.getTitle());
+            }
+
+            @Override
+            public void doUpdateVisitedHistory(WebView v, String url, boolean yenileme) {
+                // YouTube sayfa yenilemeden video değiştirir; adres buradan yakalanır.
                 if (url != null && url.startsWith("http")) sonAdres = url;
+                yerelSayfa = url != null && url.startsWith("file:///android_asset/");
+                gecmiseYaz(url, null);
             }
 
             @Override
@@ -402,10 +418,16 @@ public final class VideoEkrani extends Screen implements SurfaceCallback {
             }
 
             @Override
+            public void onReceivedTitle(WebView v, String baslik) {
+                gecmiseYaz(v.getUrl(), baslik);
+            }
+
+            @Override
             public Bitmap getDefaultVideoPoster() {
                 return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
             }
         });
+        w.addJavascriptInterface(new Kopru(), "Tiklat");
         web = w;
         // perdenin altına yerleştir
         kok.addView(w, 0, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -462,6 +484,43 @@ public final class VideoEkrani extends Screen implements SurfaceCallback {
         if (tamEkran != null && kok != null) kok.removeView(tamEkran);
         tamEkran = null;
         tamEkranGeri = null;
+    }
+
+    private void gecmiseYaz(String adres, String baslik) {
+        String id = Ayarlar.videoKimligi(adres);
+        if (id != null) new Ayarlar(getCarContext()).sonEkle(id, adres, baslik);
+    }
+
+    private boolean baslangicta() {
+        String u = web != null ? web.getUrl() : null;
+        return u != null && u.startsWith("file:///android_asset/");
+    }
+
+    /** Başlangıç sayfasının (yalnızca uygulamanın kendi sayfası) kullandığı köprü. */
+    private final class Kopru {
+        @JavascriptInterface
+        public boolean arac() {
+            return true;
+        }
+
+        @JavascriptInterface
+        public void ara() {
+            h.post(() -> {
+                if (!bitti && baslangicta()) getScreenManager().push(new AramaEkrani(getCarContext(), VideoEkrani.this));
+            });
+        }
+
+        @JavascriptInterface
+        public String sonlar() {
+            if (!yerelSayfa) return "[]";
+            return new Ayarlar(getCarContext()).sonlarJson();
+        }
+
+        @JavascriptInterface
+        public String imlerJson() {
+            if (!yerelSayfa) return "[]";
+            return new Ayarlar(getCarContext()).imlerJson();
+        }
     }
 
     // ---------------------------------------------------------------- düğmeler

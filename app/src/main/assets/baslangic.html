@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Tiklat Video</title>
+<style>
+  :root { --zemin:#0b1626; --kart:#14243a; --yazi:#eef3f9; --soluk:#8ea3bd; --vurgu:#ffc107; }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html, body { background:var(--zemin); color:var(--yazi); font-family:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  body { padding:14px 18px 28px; min-height:100vh; }
+  /* Araçta sağ kenar Android Auto düğmelerine ayrılır */
+  body.arac { padding-right:108px; }
+  header { display:flex; align-items:center; gap:14px; height:54px; margin-bottom:12px; }
+  .logo { width:44px; height:44px; border-radius:12px; background:#e53935; display:grid; place-items:center; flex:none; }
+  .logo:after { content:""; border-left:15px solid #fff; border-top:10px solid transparent; border-bottom:10px solid transparent; margin-left:4px; }
+  .ad { font-size:22px; font-weight:800; letter-spacing:.2px; }
+  .ad small { display:block; font-size:12px; font-weight:600; color:var(--soluk); letter-spacing:.3px; }
+  .bos { flex:1; }
+  .saat { font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .ara { margin-left:10px; height:50px; padding:0 22px; border-radius:25px; border:0; background:var(--vurgu); color:#1b1b1b; font-size:18px; font-weight:800; display:flex; align-items:center; gap:10px; }
+  .ara svg { width:22px; height:22px; }
+  form.telefon { display:none; flex:1; }
+  form.telefon input { width:100%; height:50px; border-radius:25px; border:0; padding:0 20px; font-size:17px; }
+  body.telefon form.telefon { display:flex; }
+  body.telefon .ara, body.telefon .bos, .saat { display:none; }
+  body.telefon form.telefon { margin-left:12px; }
+  h2 { font-size:15px; color:var(--soluk); font-weight:700; text-transform:uppercase; letter-spacing:1px; margin:16px 2px 10px; }
+  .izgara { display:grid; grid-template-columns:repeat(auto-fill, minmax(168px, 1fr)); gap:12px; }
+  .karo { position:relative; height:104px; border-radius:18px; padding:14px 16px; overflow:hidden; display:flex; flex-direction:column; justify-content:flex-end; color:#fff; text-decoration:none; }
+  .karo b { font-size:19px; font-weight:800; line-height:1.15; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+  .karo i { position:absolute; top:10px; right:14px; font-style:normal; font-size:34px; opacity:.95; }
+  .karo:active { transform:scale(.97); }
+  .son { grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); }
+  .video { border-radius:16px; overflow:hidden; background:var(--kart); text-decoration:none; color:var(--yazi); display:flex; align-items:center; height:84px; }
+  .video .resim { width:150px; height:84px; flex:none; background:#000 center/cover no-repeat; position:relative; }
+  .video .resim:after { content:""; position:absolute; left:50%; top:50%; width:36px; height:36px; margin:-18px 0 0 -18px; border-radius:50%; background:rgba(229,57,53,.92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M8 5v14l11-7z'/%3E%3C/svg%3E") center/20px no-repeat; }
+  .video span { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; padding:0 12px; font-size:15px; font-weight:600; line-height:1.3; overflow:hidden; }
+  .bilgi { margin-top:18px; color:var(--soluk); font-size:13px; line-height:1.5; }
+  .gizli { display:none; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"></div>
+  <div class="ad">Tiklat Video<small>ARAÇ EKRANI</small></div>
+  <form class="telefon" id="aramaFormu"><input id="aramaKutusu" type="search" placeholder="Ara…" enterkeyhint="search"></form>
+  <button class="ara" id="araDugme"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>YouTube'da ara</button>
+  <div class="bos"></div>
+</header>
+
+<section id="sonBolum" class="gizli">
+  <h2>Kaldığın yerden</h2>
+  <div class="izgara son" id="sonlar"></div>
+</section>
+
+<h2>Keşfet</h2>
+<div class="izgara" id="kategoriler"></div>
+
+<section id="imBolum" class="gizli">
+  <h2>Yer imlerin</h2>
+  <div class="izgara" id="imler"></div>
+</section>
+
+<p class="bilgi" id="bilgi">Araç hareket edince görüntü kapanır, ses devam eder. Durunca görüntü geri gelir.</p>
+
+<script>
+(function () {
+  var K = window.Tiklat || null;
+  var arac = !!(K && K.arac && K.arac());
+  document.body.classList.add(arac ? 'arac' : 'telefon');
+  if (!arac) document.querySelector('.ad small').textContent = 'TELEFON';
+
+  function yt(q) { return 'https://m.youtube.com/results?search_query=' + encodeURIComponent(q); }
+  var KATEGORI = [
+    ['YouTube', '▶️', 'https://m.youtube.com/', '#c62828', '#ef5350'],
+    ['Çizgi Film', '🦊', yt('çizgi film türkçe'), '#6a1b9a', '#ab47bc'],
+    ['Çocuk Şarkıları', '🎈', yt('çocuk şarkıları'), '#ef6c00', '#ffa726'],
+    ['Müzik', '🎵', yt('türkçe pop şarkılar'), '#1565c0', '#42a5f5'],
+    ['Haberler', '📰', yt('canlı haber'), '#37474f', '#78909c'],
+    ['Belgesel', '🌍', yt('belgesel türkçe'), '#2e7d32', '#66bb6a'],
+    ['Komedi', '😄', yt('komedi skeç türkçe'), '#ad1457', '#ec407a'],
+    ['Yemek', '🍲', yt('yemek tarifleri'), '#8d6e63', '#bcaaa4'],
+    ['Spor', '⚽', yt('maç özeti'), '#00838f', '#26c6da'],
+    ['Tiklat Video', '📺', 'https://www.tiklat.com.tr/autoplay/', '#0d47a1', '#ffc107']
+  ];
+
+  function karo(ad, ikon, adres, r1, r2) {
+    var a = document.createElement('a');
+    a.className = 'karo';
+    a.href = adres;
+    a.style.background = 'linear-gradient(135deg,' + r1 + ',' + r2 + ')';
+    var i = document.createElement('i'); i.textContent = ikon;
+    var b = document.createElement('b'); b.textContent = ad;
+    a.appendChild(i); a.appendChild(b);
+    return a;
+  }
+
+  var kat = document.getElementById('kategoriler');
+  KATEGORI.forEach(function (k) { kat.appendChild(karo(k[0], k[1], k[2], k[3], k[4])); });
+
+  function oku(ad) {
+    try { return JSON.parse((K && K[ad] && K[ad]()) || '[]'); } catch (e) { return []; }
+  }
+
+  var sonlar = oku('sonlar');
+  if (sonlar.length) {
+    var s = document.getElementById('sonlar');
+    sonlar.slice(0, 4).forEach(function (v) {
+      var a = document.createElement('a');
+      a.className = 'video'; a.href = v.adres;
+      var r = document.createElement('div'); r.className = 'resim';
+      r.style.backgroundImage = "url('https://i.ytimg.com/vi/" + encodeURIComponent(v.id) + "/mqdefault.jpg')";
+      var t = document.createElement('span'); t.textContent = v.baslik || 'Video';
+      a.appendChild(r); a.appendChild(t); s.appendChild(a);
+    });
+    document.getElementById('sonBolum').classList.remove('gizli');
+  }
+
+  var RENK = [['#455a64', '#78909c'], ['#5d4037', '#a1887f'], ['#283593', '#5c6bc0'], ['#00695c', '#4db6ac']];
+  var imler = oku('imlerJson').filter(function (im) { return !/tiklat\.com\.tr\/autoplay/.test(im.adres) && !/^https?:\/\/m\.youtube\.com\/?$/.test(im.adres); });
+  if (imler.length) {
+    var d = document.getElementById('imler');
+    imler.forEach(function (im, n) { var r = RENK[n % RENK.length]; d.appendChild(karo(im.ad, '⭐', im.adres, r[0], r[1])); });
+    document.getElementById('imBolum').classList.remove('gizli');
+  }
+
+  document.getElementById('araDugme').addEventListener('click', function () { if (K && K.ara) K.ara(); });
+  document.getElementById('aramaFormu').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = document.getElementById('aramaKutusu').value.trim();
+    if (q) location.href = yt(q);
+  });
+
+})();
+</script>
+</body>
+</html>
