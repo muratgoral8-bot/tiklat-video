@@ -66,7 +66,7 @@ public final class MainActivity extends Activity {
         onay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         onay.setButtonTintList(android.content.res.ColorStateList.valueOf(VURGU));
         onay.setChecked(ayar.arkaOnay());
-        onay.setOnCheckedChangeListener((b, secili) -> {
+        onay.setOnCheckedChangeListener((dugmeKutu, secili) -> {
             ayar.arkaOnayKaydet(secili);
             Toast.makeText(this, secili ? "Onaylandı. Araç ekranında içerik açılır." : "Onay kaldırıldı. Araç ekranı kapalı kalır.",
                     Toast.LENGTH_SHORT).show();
