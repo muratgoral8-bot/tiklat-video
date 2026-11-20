@@ -89,7 +89,10 @@
   var K = window.Tiklat || null;
   var arac = !!(K && K.arac && K.arac());
   document.body.classList.add(arac ? 'arac' : 'telefon');
-  if (!arac) document.querySelector('.ad small').textContent = 'TELEFON';
+  var arkaMod = !!(K && K.mod && K.mod() === 'arka');
+  if (arkaMod) document.querySelector('.ad small').textContent = arac ? 'ARKA KOLTUK' : 'ARKA KOLTUK • TELEFON';
+  else if (!arac) document.querySelector('.ad small').textContent = 'TELEFON';
+  if (arkaMod) document.getElementById('bilgi').textContent = 'Arka koltuk ekranı: araç giderken de oynar. İyi seyirler!';
 
   function yt(q) { return 'https://m.youtube.com/results?search_query=' + encodeURIComponent(q); }
   var KATEGORI = [

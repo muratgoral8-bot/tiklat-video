@@ -7,11 +7,33 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.muratgoral.tiklatvideo"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.2"
+    }
+
+    buildFeatures {
+        resValues = true
+    }
+
+    // İki uygulama tek projeden:
+    //  video : park halinde araç ekranında (Ders İzle yöntemi)
+    //  arka  : ön koltuk başlığının arkasındaki ekran, araç giderken de oynar
+    flavorDimensions += "tur"
+    productFlavors {
+        create("video") {
+            dimension = "tur"
+            applicationId = "com.muratgoral.tiklatvideo"
+            versionCode = 3
+            versionName = "1.2"
+            resValue("string", "app_name", "Tiklat Video")
+        }
+        create("arka") {
+            dimension = "tur"
+            applicationId = "com.muratgoral.tiklatarka"
+            versionCode = 1
+            versionName = "1.0"
+            resValue("string", "app_name", "Tiklat Arka Koltuk")
+        }
     }
 
     buildTypes {
@@ -31,4 +53,6 @@ android {
     }
 }
 
-// Bağımlılık yok: yalnızca Android'in kendi WebView'i.
+dependencies {
+    "arkaImplementation"("androidx.car.app:app:1.4.0")
+}

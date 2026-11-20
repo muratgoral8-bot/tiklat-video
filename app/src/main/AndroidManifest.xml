@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Tiklat Video: Ders İzle ile aynı yöntem. CAR_LAUNCHER kategorisi ve appCategory="game" ile
-  Android Auto bu etkinliği park halinde araç ekranında açar; araç hareket edince kendisi kapatır.
-  Play Store dışı kurulumda Android Auto geliştirici ayarlarında "Bilinmeyen kaynaklar" açık olmalıdır.
--->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,35 +6,10 @@
 
     <application
         android:allowBackup="true"
-        android:appCategory="game"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="false"
         android:usesCleartextTraffic="true"
-        android:theme="@android:style/Theme.Material.NoActionBar">
-
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleTask"
-            android:resizeableActivity="true"
-            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|uiMode|keyboard|keyboardHidden|navigation|fontScale">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.CAR_LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/plain" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".AyarlarActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-    </application>
+        android:theme="@android:style/Theme.Material.NoActionBar" />
 </manifest>

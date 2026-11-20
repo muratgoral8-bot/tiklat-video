@@ -24,13 +24,13 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: tiklat-video-imzasiz
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/*/release/*.apk
           if-no-files-found: error
       - name: Derleme ciktisini yayinla
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          f=$(ls app/build/outputs/apk/release/*.apk | head -1)
-          cp "$f" tiklat-video-imzasiz.apk
+          cp app/build/outputs/apk/video/release/*.apk tiklat-video-imzasiz.apk
+          cp app/build/outputs/apk/arka/release/*.apk tiklat-arka-imzasiz.apk
           gh release view arac-derleme >/dev/null 2>&1 || gh release create arac-derleme --target arac-video --prerelease --title "Tiklat Video arac (imzasiz derleme)" --notes "Kurulum icin degil: imzali APK sohbetten gonderilir."
-          gh release upload arac-derleme tiklat-video-imzasiz.apk --clobber
+          gh release upload arac-derleme tiklat-video-imzasiz.apk tiklat-arka-imzasiz.apk --clobber

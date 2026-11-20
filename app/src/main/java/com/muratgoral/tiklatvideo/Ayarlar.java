@@ -67,6 +67,15 @@ final class Ayarlar {
         return true;
     }
 
+    /** Arka koltuk uygulaması: ekranın sürücünün göremediği yerde olduğuna dair kullanıcı onayı. */
+    boolean arkaOnay() {
+        return p.getBoolean("arkaOnay", false);
+    }
+
+    void arkaOnayKaydet(boolean onay) {
+        p.edit().putBoolean("arkaOnay", onay).apply();
+    }
+
     String imlerJson() {
         JSONArray d = new JSONArray();
         try {
