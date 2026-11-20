@@ -154,8 +154,8 @@ public final class VideoEkrani extends Screen implements SurfaceCallback {
             perde.setVisibility(View.GONE);
             return;
         }
-        perde.setText("Tiklat Arka Koltuk\n\nBu uygulama sürücünün göremediği arka koltuk ekranı içindir.\n"
-                + "Telefonda Tiklat Arka Koltuk'u açıp onay kutusunu işaretleyin.");
+        perde.setText("Tiklat Arka Sürüş\n\nBu uygulama sürücünün göremediği arka koltuk ekranı içindir.\n"
+                + "Telefonda Tiklat Arka Sürüş'ü açıp onay kutusunu işaretleyin.");
         perde.setVisibility(View.VISIBLE);
     }
 

@@ -32,5 +32,6 @@ jobs:
         run: |
           cp app/build/outputs/apk/video/release/*.apk tiklat-video-imzasiz.apk
           cp app/build/outputs/apk/arka/release/*.apk tiklat-arka-imzasiz.apk
+          cp app/build/outputs/apk/surus/release/*.apk tiklat-surus-imzasiz.apk
           gh release view arac-derleme >/dev/null 2>&1 || gh release create arac-derleme --target arac-video --prerelease --title "Tiklat Video arac (imzasiz derleme)" --notes "Kurulum icin degil: imzali APK sohbetten gonderilir."
-          gh release upload arac-derleme tiklat-video-imzasiz.apk tiklat-arka-imzasiz.apk --clobber
+          gh release upload arac-derleme tiklat-video-imzasiz.apk tiklat-arka-imzasiz.apk tiklat-surus-imzasiz.apk --clobber

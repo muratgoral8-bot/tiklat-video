@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Tiklat Arka Koltuk: ön koltuk başlığının arkasındaki Android Auto ekranı için.
-  Car App Library'nin navigasyon yüzeyine çizer; Android Auto navigasyon uygulamalarını sürüşte kapatmaz.
+  Ders İzle gibi park uygulaması olarak kayıtlı (Play kaydı gerekmeden listede görünür).
+  distractionOptimized: Android Auto'ya bu ekranın sürüşte de açık kalabileceğini bildirir.
   İçerik, telefonda "ekran arka koltukta" onayı verilmeden gösterilmez.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <uses-permission android:name="androidx.car.app.NAVIGATION_TEMPLATES" />
-    <uses-permission android:name="androidx.car.app.ACCESS_SURFACE" />
-
-    <application>
+    <application android:appCategory="game">
         <meta-data
-            android:name="com.google.android.gms.car.application"
-            android:resource="@xml/automotive_app_desc" />
-        <meta-data
-            android:name="androidx.car.app.minCarApiLevel"
-            android:value="1" />
-
-        <service
-            android:name=".TiklatCarAppService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="androidx.car.app.category.NAVIGATION" />
-            </intent-filter>
-        </service>
+            android:name="distractionOptimized"
+            android:value="true" />
 
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density|uiMode|keyboard|keyboardHidden|navigation|fontScale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.CAR_LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <meta-data
+                android:name="distractionOptimized"
+                android:value="true" />
         </activity>
 
         <activity
-            android:name=".OnizlemeActivity"
+            android:name=".AyarlarActivity"
             android:exported="false"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="distractionOptimized"
+                android:value="true" />
+        </activity>
     </application>
 </manifest>

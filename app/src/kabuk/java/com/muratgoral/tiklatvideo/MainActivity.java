@@ -29,6 +29,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.regex.Matcher;
@@ -37,6 +38,7 @@ import java.util.regex.Pattern;
 /**
  * Tek ekran: telefonda ve (Android Auto park uygulaması olarak) araç ekranında aynı WebView.
  * Başlangıç sayfası uygulamanın içindedir, giriş gerektirmez.
+ * Arka koltuk sürümünde (BuildConfig.ARKA) telefonda "ekran arka koltukta" onayı verilmeden içerik açılmaz.
  */
 public final class MainActivity extends Activity {
     private static final int ZEMIN = 0xFF0B1626;
@@ -48,6 +50,8 @@ public final class MainActivity extends Activity {
     private FrameLayout kok;
     private WebView web;
     private LinearLayout araclar;
+    private TextView onayPerde;
+    private boolean ayarAcildi;
     private View tamEkran;
     private WebChromeClient.CustomViewCallback tamEkranGeri;
     private Ayarlar ayar;
@@ -76,12 +80,56 @@ public final class MainActivity extends Activity {
         web.setBackgroundColor(ZEMIN);
         kok.addView(web, tam());
         araclarKur();
+        onayPerdeKur();
         setContentView(kok);
         webKur();
         aracta = aractaMi();
 
+        if (onayEksik()) {
+            onayIste();
+            return;
+        }
         if (!paylasimiIsle(getIntent())) {
             if (durum == null || web.restoreState(durum) == null) web.loadUrl(ayar.anaSayfa());
+        }
+    }
+
+    // ---------------------------------------------------------------- arka koltuk onayı
+
+    private boolean onayEksik() {
+        return BuildConfig.ARKA && !ayar.arkaOnay();
+    }
+
+    private void onayPerdeKur() {
+        onayPerde = new TextView(this);
+        onayPerde.setBackgroundColor(ZEMIN);
+        onayPerde.setTextColor(Color.WHITE);
+        onayPerde.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        onayPerde.setGravity(Gravity.CENTER);
+        int p = dp(32);
+        onayPerde.setPadding(p, p, p, p);
+        onayPerde.setClickable(true);
+        onayPerde.setText("Tiklat Arka Koltuk\n\nBu uygulama sürücünün göremediği arka koltuk ekranı içindir.\n"
+                + "Telefonda Tiklat Arka Koltuk'u açıp onay kutusunu işaretleyin.");
+        onayPerde.setVisibility(View.GONE);
+        kok.addView(onayPerde, tam());
+    }
+
+    private void onayIste() {
+        onayPerde.setVisibility(View.VISIBLE);
+        if (!aracta && !ayarAcildi) {
+            ayarAcildi = true;
+            startActivityForResult(new Intent(this, AyarlarActivity.class), AYARLAR);
+        }
+    }
+
+    private void onayDenetle() {
+        if (!BuildConfig.ARKA) return;
+        if (onayEksik()) {
+            onayIste();
+        } else if (onayPerde.getVisibility() == View.VISIBLE) {
+            onayPerde.setVisibility(View.GONE);
+            web.loadUrl(ayar.anaSayfa());
         }
     }
 
@@ -97,6 +145,7 @@ public final class MainActivity extends Activity {
         super.onStart();
         web.onResume();
         ekranDegistiMi();
+        onayDenetle();
     }
 
     @Override
@@ -149,7 +198,7 @@ public final class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     protected void onActivityResult(int kod, int sonuc, Intent veri) {
         super.onActivityResult(kod, sonuc, veri);
-        if (kod == AYARLAR && sonuc == RESULT_OK) web.loadUrl(ayar.anaSayfa());
+        if (kod == AYARLAR && sonuc == RESULT_OK && !onayEksik()) web.loadUrl(ayar.anaSayfa());
     }
 
     // ---------------------------------------------------------------- araç ekranı
@@ -356,6 +405,11 @@ public final class MainActivity extends Activity {
         @JavascriptInterface
         public boolean arac() {
             return aracta;
+        }
+
+        @JavascriptInterface
+        public String mod() {
+            return BuildConfig.ARKA ? "arka" : "";
         }
 
         @JavascriptInterface

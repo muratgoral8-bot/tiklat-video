@@ -1,6 +1,7 @@
 package com.muratgoral.tiklatvideo;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -11,17 +12,19 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-/** Telefondaki ayarlar: kurulum adımları, ana sayfa ve yer imleri. */
-public final class AyarlarActivity extends Activity {
+/** Telefon ekranı: arka koltuk onayı, kurulum adımları, ana sayfa ve yer imleri. */
+public final class MainActivity extends Activity {
     private static final int ZEMIN = 0xFF0D2A4A, KART = 0xFF143A63, VURGU = 0xFFFFC107, KIRMIZI = 0xFFE53935;
 
     private EditText anaKutu, imKutu;
+    private CheckBox onay;
     private Ayarlar ayar;
     private float yo;
 
@@ -45,8 +48,30 @@ public final class AyarlarActivity extends Activity {
         TextView baslik = yazi("Tiklat Video", 30, Color.WHITE, true);
         ic.addView(baslik);
         ic.addView(bosluk(4));
-        ic.addView(yazi("Android Auto ekranında video", 16, VURGU, true));
+        ic.addView(yazi("Arka koltuk ekranı için: araç giderken de oynar", 16, VURGU, true));
         ic.addView(bosluk(18));
+
+        LinearLayout arka = kart(ic);
+        arka.addView(yazi("Arka koltuk onayı", 18, Color.WHITE, true));
+        arka.addView(bosluk(8));
+        arka.addView(yazi(
+                "Bu uygulama Android Auto ekranı ön koltuk başlığının arkasına takılı olan, yalnızca arkada oturanların "
+                + "gördüğü ekranlar içindir. Araç hareket halindeyken de video oynatır. Sürücünün görebileceği "
+                + "ön ekranda kullanmayın; sürüşte ekrana bakmak hem tehlikeli hem yasaktır.",
+                15, 0xFFDDE6F0, false));
+        arka.addView(bosluk(10));
+        onay = new CheckBox(this);
+        onay.setText("Ekran arka koltukta, sürücü göremiyor. Yalnızca arka koltuk için kullanacağım.");
+        onay.setTextColor(Color.WHITE);
+        onay.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        onay.setButtonTintList(android.content.res.ColorStateList.valueOf(VURGU));
+        onay.setChecked(ayar.arkaOnay());
+        onay.setOnCheckedChangeListener((dugmeKutu, secili) -> {
+            ayar.arkaOnayKaydet(secili);
+            Toast.makeText(this, secili ? "Onaylandı. Araç ekranında içerik açılır." : "Onay kaldırıldı. Araç ekranı kapalı kalır.",
+                    Toast.LENGTH_SHORT).show();
+        });
+        arka.addView(onay);
 
         LinearLayout kurulum = kart(ic);
         kurulum.addView(yazi("Kurulum (bir kez yapılır)", 18, Color.WHITE, true));
@@ -55,17 +80,14 @@ public final class AyarlarActivity extends Activity {
                 "1. Telefonun Ayarlar uygulamasında \"Android Auto\" diye arat ve aç.\n\n"
                 + "2. En alttaki \"Sürüm\" yazısına art arda 10 kez dokun, çıkan uyarıya Tamam de. Geliştirici modu açılır.\n\n"
                 + "3. Sağ üstteki üç noktaya dokun → Geliştirici ayarları → \"Bilinmeyen kaynaklar\" kutusunu işaretle.\n\n"
-                + "4. Telefonu araca bağla. Araç park halindeyken uygulama listesinde Tiklat Video'yu aç.",
+                + "4. Android Auto bu tip uygulamayı yalnızca Play Store'dan yüklenmiş görünüyorsa listeler. "
+                + "Bu yüzden bu APK'yı UnknownAuto uygulamasıyla kurman gerekir (Shizuku ile, bilgisayarsız).\n\n"
+                + "5. Yukarıdaki onay kutusunu işaretle.\n\n"
+                + "6. Telefonu arka ekrana bağla. Uygulama listesinde Tiklat Arka Sürüş'ü aç.",
                 15, 0xFFDDE6F0, false));
-
-        LinearLayout guvenlik = kart(ic);
-        guvenlik.addView(yazi("Güvenlik", 18, Color.WHITE, true));
-        guvenlik.addView(bosluk(8));
-        guvenlik.addView(yazi(
-                "Araç ekranında yalnızca park halindeyken açılır. Araç hareket edince Android Auto uygulamayı kendisi kapatır "
-                + "(Google'ın kuralı). Durunca yeniden açıp \"Kaldığın yerden\" bölümünden devam edebilirsin.\n\n"
-                + "YouTube uygulamasında bir videoda ya da kanalda Paylaş → Tiklat Video dersen yer imlerine eklenir.",
-                15, 0xFFDDE6F0, false));
+        kurulum.addView(bosluk(10));
+        kurulum.addView(yazi("Araç ekranında: sağ üstte Ana sayfa, Geri ve Yenile; sağ altta kaydırma düğmeleri var. "
+                + "Arama için ekrandaki \"YouTube'da ara\" düğmesi büyük bir klavye açar.", 14, 0xFFB8C7D9, false));
 
         LinearLayout ayarlar = kart(ic);
         ayarlar.addView(yazi("Ana sayfa adresi", 16, Color.WHITE, true));
@@ -90,10 +112,15 @@ public final class AyarlarActivity extends Activity {
             ayar.kaydet(anaKutu.getText().toString(), imKutu.getText().toString());
             anaKutu.setText(ayar.anaSayfaYazisi());
             Toast.makeText(this, "Kaydedildi", Toast.LENGTH_SHORT).show();
-            setResult(RESULT_OK);
-            finish();
         });
         ayarlar.addView(kaydet);
+        ayarlar.addView(bosluk(10));
+        Button dene = dugme("Telefonda dene", KIRMIZI, Color.WHITE);
+        dene.setOnClickListener(v -> {
+            ayar.kaydet(anaKutu.getText().toString(), imKutu.getText().toString());
+            startActivity(new Intent(this, OnizlemeActivity.class).putExtra("adres", ayar.anaSayfa()));
+        });
+        ayarlar.addView(dene);
 
         ic.addView(bosluk(18));
         TextView alt = yazi("www.muratgoral.com.tr", 13, 0xFF8FA6BF, false);
