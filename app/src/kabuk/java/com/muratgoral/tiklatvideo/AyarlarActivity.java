@@ -46,7 +46,8 @@ public final class AyarlarActivity extends Activity {
         TextView baslik = yazi("Tiklat Video", 30, Color.WHITE, true);
         ic.addView(baslik);
         ic.addView(bosluk(4));
-        ic.addView(yazi(BuildConfig.ARKA ? "Arka koltuk ekranı için" : "Android Auto ekranında video", 16, VURGU, true));
+        ic.addView(yazi(BuildConfig.EKRAN ? "Koltuk arkası ekrana kurulu sürüm"
+                : BuildConfig.ARKA ? "Arka koltuk ekranı için" : "Android Auto ekranında video", 16, VURGU, true));
         ic.addView(bosluk(18));
 
         if (BuildConfig.ARKA) {
@@ -74,6 +75,7 @@ public final class AyarlarActivity extends Activity {
         }
 
         LinearLayout kurulum = kart(ic);
+        if (BuildConfig.EKRAN) kurulum.setVisibility(View.GONE);
         kurulum.addView(yazi("Kurulum (bir kez yapılır)", 18, Color.WHITE, true));
         kurulum.addView(bosluk(10));
         kurulum.addView(yazi(
@@ -86,6 +88,7 @@ public final class AyarlarActivity extends Activity {
                 15, 0xFFDDE6F0, false));
 
         LinearLayout guvenlik = kart(ic);
+        if (BuildConfig.EKRAN) guvenlik.setVisibility(View.GONE);
         guvenlik.addView(yazi("Güvenlik", 18, Color.WHITE, true));
         guvenlik.addView(bosluk(8));
         guvenlik.addView(yazi(

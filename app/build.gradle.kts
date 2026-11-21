@@ -20,6 +20,7 @@ android {
     //  video : park halinde araç ekranında (Ders İzle yöntemi)
     //  arka  : ön koltuk başlığının arkasındaki ekran; park uygulaması + "sürüşte açık kalabilir" işareti
     //  surus : arka ekran için harita tipi (navigasyon yüzeyi) uygulama; UnknownAuto ile kurulur
+    //  ekran : Android Auto'suz; doğrudan koltuk arkası ekranın kendi Android'ine kurulur
     flavorDimensions += "tur"
     productFlavors {
         create("video") {
@@ -29,6 +30,7 @@ android {
             versionName = "1.2"
             resValue("string", "app_name", "Tiklat Video")
             buildConfigField("boolean", "ARKA", "false")
+            buildConfigField("boolean", "EKRAN", "false")
         }
         create("arka") {
             dimension = "tur"
@@ -37,6 +39,7 @@ android {
             versionName = "1.1"
             resValue("string", "app_name", "Tiklat Arka Koltuk")
             buildConfigField("boolean", "ARKA", "true")
+            buildConfigField("boolean", "EKRAN", "false")
         }
         create("surus") {
             dimension = "tur"
@@ -45,6 +48,16 @@ android {
             versionName = "1.0"
             resValue("string", "app_name", "Tiklat Arka Sürüş")
             buildConfigField("boolean", "ARKA", "true")
+            buildConfigField("boolean", "EKRAN", "false")
+        }
+        create("ekran") {
+            dimension = "tur"
+            applicationId = "com.muratgoral.tiklatekran"
+            versionCode = 1
+            versionName = "1.0"
+            resValue("string", "app_name", "Tiklat Arka Ekran")
+            buildConfigField("boolean", "ARKA", "false")
+            buildConfigField("boolean", "EKRAN", "true")
         }
     }
 
@@ -52,6 +65,7 @@ android {
     sourceSets {
         getByName("video").java.srcDir("src/kabuk/java")
         getByName("arka").java.srcDir("src/kabuk/java")
+        getByName("ekran").java.srcDir("src/kabuk/java")
     }
 
     buildTypes {

@@ -40,7 +40,7 @@
   .gizli { display:none; }
   .ayar { width:50px; height:50px; border-radius:25px; border:0; background:#22344d; color:#fff; display:none; place-items:center; flex:none; margin-left:10px; }
   .ayar svg { width:26px; height:26px; }
-  body.telefon .ayar { display:grid; }
+  body.telefon .ayar, body.ekran .ayar { display:grid; }
   /* araç ekranı klavyesi */
   #klavye { position:fixed; left:0; right:0; bottom:0; background:#0e1a2c; border-top:1px solid #2a3c58; padding:8px 10px 10px; z-index:10; display:none; }
   #klavye.acik { display:block; }
@@ -89,7 +89,13 @@
   var K = window.Tiklat || null;
   var arac = !!(K && K.arac && K.arac());
   document.body.classList.add(arac ? 'arac' : 'telefon');
-  var arkaMod = !!(K && K.mod && K.mod() === 'arka');
+  var mod = (K && K.mod && K.mod()) || '';
+  var arkaMod = mod === 'arka';
+  if (mod === 'ekran') {
+    document.body.classList.add('ekran');
+    document.querySelector('.ad small').textContent = 'ARKA EKRAN';
+    document.getElementById('bilgi').textContent = 'Koltuk arkası ekrana kurulu: araç giderken de oynar. İyi seyirler!';
+  }
   if (arkaMod) document.querySelector('.ad small').textContent = arac ? 'ARKA KOLTUK' : 'ARKA KOLTUK • TELEFON';
   else if (!arac) document.querySelector('.ad small').textContent = 'TELEFON';
   if (arkaMod) document.getElementById('bilgi').textContent = 'Arka koltuk ekranı: araç giderken de oynar. İyi seyirler!';

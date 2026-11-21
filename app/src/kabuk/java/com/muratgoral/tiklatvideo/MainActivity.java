@@ -17,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
@@ -85,6 +86,7 @@ public final class MainActivity extends Activity {
         webKur();
         aracta = aractaMi();
 
+        if (BuildConfig.EKRAN) tamEkranModu();
         if (onayEksik()) {
             onayIste();
             return;
@@ -92,6 +94,31 @@ public final class MainActivity extends Activity {
         if (!paylasimiIsle(getIntent())) {
             if (durum == null || web.restoreState(durum) == null) web.loadUrl(ayar.anaSayfa());
         }
+    }
+
+    // ---------------------------------------------------------------- arka ekran (doğrudan koltuk ekranına kurulu)
+
+    /** Koltuk arkası ekranda durum ve gezinme çubuklarını gizle; kenardan kaydırınca geri gelir. */
+    @SuppressWarnings("deprecation")
+    private void tamEkranModu() {
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsetsController c = getWindow().getInsetsController();
+            if (c != null) {
+                c.hide(WindowInsets.Type.systemBars());
+                c.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            }
+        } else {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        }
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean odak) {
+        super.onWindowFocusChanged(odak);
+        if (odak && BuildConfig.EKRAN) tamEkranModu();
     }
 
     // ---------------------------------------------------------------- arka koltuk onayı
@@ -205,6 +232,7 @@ public final class MainActivity extends Activity {
 
     /** Android Auto etkinliği araç ekranında (telefonun ana ekranı dışında) açar. */
     private boolean aractaMi() {
+        if (BuildConfig.EKRAN) return true; // koltuk ekranının kendisi: büyük klavye ve araç görünümü
         if (Build.VERSION.SDK_INT >= 30) {
             Display d = getDisplay();
             return d != null && d.getDisplayId() != Display.DEFAULT_DISPLAY;
@@ -409,7 +437,7 @@ public final class MainActivity extends Activity {
 
         @JavascriptInterface
         public String mod() {
-            return BuildConfig.ARKA ? "arka" : "";
+            return BuildConfig.EKRAN ? "ekran" : BuildConfig.ARKA ? "arka" : "";
         }
 
         @JavascriptInterface
